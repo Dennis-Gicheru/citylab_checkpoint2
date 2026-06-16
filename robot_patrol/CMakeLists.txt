@@ -31,10 +31,20 @@ rosidl_get_typesupport_target(cpp_typesupport_target
 add_executable(patrol_node src/patrol.cpp)
 ament_target_dependencies(patrol_node rclcpp sensor_msgs geometry_msgs)
 
-# ── Milestone 2+ executables will be appended here ─────────────────────────
+# ── Milestone 2: direction service server ──────────────────────────────────
+add_executable(direction_service_node src/direction_service.cpp)
+ament_target_dependencies(direction_service_node rclcpp sensor_msgs)
+target_link_libraries(direction_service_node "${cpp_typesupport_target}")
+
+# ── Milestone 2: test service client ───────────────────────────────────────
+add_executable(test_service_node src/test_service.cpp)
+ament_target_dependencies(test_service_node rclcpp sensor_msgs)
+target_link_libraries(test_service_node "${cpp_typesupport_target}")
 
 install(TARGETS
   patrol_node
+  direction_service_node
+  test_service_node
   DESTINATION lib/${PROJECT_NAME})
 
 install(DIRECTORY launch rviz
