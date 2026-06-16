@@ -5,32 +5,44 @@ if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   add_compile_options(-Wall -Wextra -Wpedantic)
 endif()
 
-# 1. Find the required packages
+# find dependencies
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
+find_package(rclcpp_action REQUIRED)
 find_package(sensor_msgs REQUIRED)
 find_package(geometry_msgs REQUIRED)
+find_package(nav_msgs REQUIRED)
+find_package(tf2 REQUIRED)
+find_package(tf2_geometry_msgs REQUIRED)
+find_package(rosidl_default_generators REQUIRED)
 
-# 2. Add the executable 
-add_executable(patrol_node src/patrol.cpp)
-
-# 3. Link the dependencies to the executable
-ament_target_dependencies(patrol_node 
-  rclcpp 
-  sensor_msgs 
-  geometry_msgs
+# Generate custom interfaces inside this package
+rosidl_generate_interfaces(${PROJECT_NAME}
+  "srv/GetDirection.srv"
+  "action/GoToPose.action"
+  DEPENDENCIES sensor_msgs geometry_msgs
 )
 
-# 4. Install the executable 
+# Typesupport handle for linking generated interfaces into same-package C++ targets
+rosidl_get_typesupport_target(cpp_typesupport_target
+  ${PROJECT_NAME} rosidl_typesupport_cpp)
+
+# ── Existing Checkpoint 1 patrol node ──────────────────────────────────────
+add_executable(patrol_node src/patrol.cpp)
+ament_target_dependencies(patrol_node rclcpp sensor_msgs geometry_msgs)
+
+# ── Milestone 2+ executables will be appended here ─────────────────────────
+
 install(TARGETS
   patrol_node
-  DESTINATION lib/${PROJECT_NAME}
-)
+  DESTINATION lib/${PROJECT_NAME})
 
-# 5. Install the launch files
 install(DIRECTORY launch rviz
-  DESTINATION share/${PROJECT_NAME}
-)
+  DESTINATION share/${PROJECT_NAME})
+
+if(BUILD_TESTING)
+  find_package(ament_lint_auto REQUIRED)
+  ament_lint_auto_find_test_dependencies()
+endif()
 
 ament_package()
-
