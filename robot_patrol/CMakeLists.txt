@@ -41,15 +41,28 @@ add_executable(test_service_node src/test_service.cpp)
 ament_target_dependencies(test_service_node rclcpp sensor_msgs)
 target_link_libraries(test_service_node "${cpp_typesupport_target}")
 
+#--- Milestone 3: patrol with service node -------- #
 add_executable(patrol_with_service_node src/patrol_with_service.cpp)
 ament_target_dependencies(patrol_with_service_node rclcpp sensor_msgs geometry_msgs)
 target_link_libraries(patrol_with_service_node "${cpp_typesupport_target}")
+
+# ── Milestone 4: go to pose action server ──────────────────────────────────
+add_executable(go_to_pose_action_node src/go_to_pose_action.cpp)
+ament_target_dependencies(go_to_pose_action_node
+  rclcpp
+  rclcpp_action
+  geometry_msgs
+  nav_msgs
+  tf2
+)
+target_link_libraries(go_to_pose_action_node "${cpp_typesupport_target}")
 
 install(TARGETS
   patrol_node
   direction_service_node
   test_service_node
   patrol_with_service_node
+  go_to_pose_action_node
   DESTINATION lib/${PROJECT_NAME})
 
 install(DIRECTORY launch rviz
