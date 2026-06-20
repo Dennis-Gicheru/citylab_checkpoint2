@@ -12,11 +12,8 @@ def generate_launch_description():
         Node(
             package='robot_patrol',
             executable='go_to_pose_action_node',
-            output='screen',
-            remappings=[
-                ('/odom', '/fastbot_1/odom'),
-                ('/cmd_vel', '/fastbot_1/cmd_vel')
-            ]
+            output='screen'
+            
         ),
         Node(
             package='rviz2',

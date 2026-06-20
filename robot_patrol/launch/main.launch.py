@@ -20,11 +20,7 @@ def generate_launch_description():
     patrol = Node(
         package='robot_patrol',
         executable='patrol_with_service_node',
-        output='screen',
-        remappings=[
-            ('/scan', '/fastbot_1/scan'),
-            ('/cmd_vel', '/fastbot_1/cmd_vel')
-        ]
+        output='screen'
     )
 
     # RViz with the saved patrol configuration

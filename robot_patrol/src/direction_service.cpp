@@ -41,24 +41,18 @@ private:
     const auto & scan = request->laser_data;
 
     // Three 60° sectors across the front 180°
-    const int right_start = angle_to_index(scan, -M_PI / 2.0f);   // -90°
-    const int front_start = angle_to_index(scan, -M_PI / 6.0f);   // -30°
-    const int left_start  = angle_to_index(scan,  M_PI / 6.0f);   // +30°
-    const int left_end    = angle_to_index(scan,  M_PI / 2.0f);   // +90°
-
+    const int front_end  = angle_to_index(scan, M_PI / 6.0f);    // 30°
+    const int left_end   = angle_to_index(scan, M_PI);           // 180°
+    const int right_start = left_end;
+    const int right_end  = scan.ranges.size();
+ 
     float total_right = 0.0f;
     float total_front = 0.0f;
     float total_left  = 0.0f;
     float min_front   = std::numeric_limits<float>::infinity();
 
-    // Right sector: [-90°, -30°)
-    for (int i = right_start; i < front_start; ++i) {
-      const float r = scan.ranges[i];
-      if (std::isfinite(r)) total_right += r;
-    }
-
-    // Front sector: [-30°, +30°) — also track the closest obstacle
-    for (int i = front_start; i < left_start; ++i) {
+     // Front sector: [0°, 30°)
+    for (int i = 0; i < front_end; ++i) {
       const float r = scan.ranges[i];
       if (std::isfinite(r)) {
         total_front += r;
@@ -66,15 +60,21 @@ private:
       }
     }
 
-    // Left sector: [+30°, +90°]
-    for (int i = left_start; i <= left_end; ++i) {
+    // Left sector: [30°, 180°)
+    for (int i = front_end; i < left_end; ++i) {
       const float r = scan.ranges[i];
       if (std::isfinite(r)) total_left += r;
     }
 
+    // Right sector: [180°, 360°)
+    for (int i = right_start; i < right_end; ++i) {
+      const float r = scan.ranges[i];
+      if (std::isfinite(r)) total_right += r;
+    }
+
     // Decision logic (per spec)
     std::string direction;
-    if (min_front > 0.35f) {
+    if (min_front > 0.50f) {
       direction = "forward";
     } else if (total_left > total_right) {
       direction = "left";

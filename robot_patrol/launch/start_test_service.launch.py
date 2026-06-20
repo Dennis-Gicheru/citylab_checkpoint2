@@ -6,7 +6,6 @@ def generate_launch_description():
         Node(
             package='robot_patrol',
             executable='test_service_node',
-            output='screen',
-            remappings=[('/scan', '/fastbot_1/scan')]
+            output='screen'
         )
     ])
